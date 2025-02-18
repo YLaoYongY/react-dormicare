@@ -1,0 +1,32 @@
+.app-layout {
+  min-height: 100vh;
+}
+
+.app-layout .ant-layout {
+  min-height: 100vh;
+}
+
+.app-layout .ant-layout-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.demo-logo-vertical {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 95%;
+  margin: 10px auto;
+  background-color: #334454; /* 天蓝色 */
+  padding: 5px;
+  border-radius: 10px;
+}
+img {
+  border-radius: 5px; /* 图片也是圆角 */
+  // margin-right: 5px; /* 图片与文字之间的间距 */
+}
+.collapsed {
+  width: 50px; /* 调整为只显示图片的宽度 */
+  justify-content: center;
+  background-color: transparent; /* 收缩时背景色消失 */
+}

@@ -1,5 +1,7 @@
+import App from './components/App.jsx'
+import './index.scss'
 const Layout = () => {
-  return <div>我是layout</div>
+  return <App />
 }
 
 export default Layout
