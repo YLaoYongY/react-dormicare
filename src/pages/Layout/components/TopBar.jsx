@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
-import { Breadcrumb, Popconfirm, Dropdown } from 'antd'
-
-import { Modal, Button, Layout as AntdLayout } from 'antd'
+import { ConfigProvider, theme, Breadcrumb, Dropdown, Modal, Badge, Layout as AntdLayout } from 'antd'
 
 import autor from '@/assets/autor.jpeg'
 import { useNavigate } from 'react-router-dom'
@@ -26,7 +24,7 @@ const TopBar = () => {
       key: '1',
       label: (
         <a href="" onClick={showModal}>
-          切换账号
+          我的消息
         </a>
       ),
     },
@@ -72,7 +70,13 @@ const TopBar = () => {
           placement="bottomRight"
           arrow
         >
-          <img src={autor} alt="" style={{ width: '50px', height: '50px', borderRadius: '8px', cursor: 'pointer' }} />
+          <Badge count={5} size="small" offset={[0, 5]}>
+            <img
+              src={autor}
+              alt=""
+              style={{ width: '40px', height: '40px', borderRadius: '8px', cursor: 'pointer', marginTop: '5px' }}
+            />
+          </Badge>
         </Dropdown>
         <Modal title="温馨提示" open={open} onOk={tiaozhuan} onCancel={hideModal} okText="确认" cancelText="取消">
           <p>确定要退出登录吗</p>
