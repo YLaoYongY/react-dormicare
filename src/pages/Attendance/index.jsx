@@ -1,216 +1,249 @@
-import React, { useState } from 'react'
-import { Line, Pie } from '@ant-design/charts'
-import { List, Button, Typography, DatePicker, Card, Row, Col } from 'antd'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useRef } from 'react'
+import * as echarts from 'echarts'
+// 饼图的数据
+const data1 = [
+  {
+    name: '垃圾未倒',
+    value: 70,
+  },
+  {
+    name: '地面不干净',
+    value: 68,
+  },
+  {
+    name: '马桶不干净',
+    value: 48,
+  },
+  {
+    name: '洗漱台镜面未擦',
+    value: 40,
+  },
+  {
+    name: '内务不合格',
+    value: 32,
+  },
+  {
+    name: '桌面不整洁',
+    value: 27,
+  },
+]
+const data2 = [
+  {
+    name: '一楼',
+    value: 70,
+  },
+  {
+    name: '二楼',
+    value: 68,
+  },
+  {
+    name: '三楼',
+    value: 48,
+  },
+  {
+    name: '四楼',
+    value: 4,
+  },
+  {
+    name: '五楼',
+    value: 32,
+  },
+  {
+    name: '六楼',
+    value: 27,
+  },
+]
+const data3 = [
+  {
+    name: '上午卫生',
+    value: 70,
+  },
+  {
+    name: '下午卫生',
+    value: 68,
+  },
+]
+const data4 = [
+  {
+    name: '一天内卫生不合格',
+    value: 70,
+  },
+  {
+    name: '两天内卫生不合格',
+    value: 68,
+  },
+  {
+    name: '三天内卫生不合格',
+    value: 48,
+  },
+  {
+    name: '四天内卫生不合格',
+    value: 4,
+  },
 
-const { Title, Text } = Typography
-
+  {
+    name: '七天内卫生不合格',
+    value: 27,
+  },
+]
 const Attendance = () => {
-  const [deadlineAM, setDeadlineAM] = useState(new Date())
-  const [deadlinePM, setDeadlinePM] = useState(new Date())
+  const lineChart = useRef(null)
+  const pieChart = useRef(null)
 
-  // 模拟数据
-  const lineData = [
-    { date: '2023-01-01', count: 5 },
-    { date: '2023-01-02', count: 3 },
-    // 更多数据...
-  ]
-
-  const pieData1 = [
-    { type: '原因1', value: 20 },
-    { type: '原因2', value: 30 },
-    // 更多数据...
-  ]
-
-  const pieData2 = [
-    { type: '1层', value: 20 },
-    { type: '2层', value: 30 },
-    // 更多数据...
-  ]
-
-  const pieData3 = [
-    { type: '上午', value: 20 },
-    { type: '下午', value: 30 },
-    { type: '晚上', value: 50 },
-  ]
-
-  const pieData4 = [
-    { type: '1天', value: 15 },
-    { type: '2天', value: 60 },
-    { type: '3天', value: 25 },
-  ]
-
-  // 模拟任务清单数据
-  const taskListAM = [
-    { id: 1, room: '101', status: '待审核' },
-    // 更多数据...
-  ]
-
-  const taskListPM = [
-    { id: 1, room: '102', status: '待审核' },
-    // 更多数据...
-  ]
-
-  const lineConfig = {
-    data: lineData,
-    xField: 'date',
-    yField: 'count',
-    seriesField: 'type',
-    label: {},
-    point: {
-      size: 5,
-      shape: 'diamond',
-    },
-    height: 400, // 设置高度
-  }
-
-  const pieConfig = {
-    data: pieData1,
-    angleField: 'value',
-    colorField: 'type',
-    radius: 0.8,
-    label: {
-      type: 'inner',
-      offset: '-30%',
-      content: '{value}',
-      style: {
-        textAlign: 'center',
-        fontSize: 14,
-      },
-    },
-    height: 200, // 设置高度
-  }
-
-  const pieConfig2 = {
-    data: pieData2,
-    angleField: 'value',
-    colorField: 'type',
-    radius: 0.8,
-    label: {
-      type: 'inner',
-      offset: '-30%',
-      content: '{value}',
-      style: {
-        textAlign: 'center',
-        fontSize: 14,
-      },
-    },
-    height: 200, // 设置高度
-  }
-
-  const pieConfig3 = {
-    data: pieData3,
-    angleField: 'value',
-    colorField: 'type',
-    radius: 0.8,
-    label: {
-      type: 'inner',
-      offset: '-30%',
-      content: '{value}',
-      style: {
-        textAlign: 'center',
-        fontSize: 14,
-      },
-    },
-    height: 200, // 设置高度
-  }
-
-  const pieConfig4 = {
-    data: pieData4,
-    angleField: 'value',
-    colorField: 'type',
-    radius: 0.8,
-    label: {
-      type: 'inner',
-      offset: '-30%',
-      content: '{value}',
-      style: {
-        textAlign: 'center',
-        fontSize: 14,
-      },
-    },
-    height: 200, // 设置高度
-  }
+  useEffect(() => {
+    // 折线图
+    // 确保DOM元素已经渲染
+    if (lineChart.current) {
+      let myChart = echarts.init(lineChart.current)
+      myChart.setOption({
+        title: {
+          text: '宿舍值日不合格数量',
+          left: 'center',
+          textStyle: {
+            color: '#333',
+            fontSize: 16,
+          },
+        },
+        tooltip: {},
+        xAxis: {
+          data: Array.from({ length: 30 }, (_, i) => `第${i + 1}天`),
+          axisLine: {
+            lineStyle: {
+              color: '#333',
+            },
+          },
+          axisLabel: {
+            color: '#333',
+          },
+        },
+        yAxis: {
+          name: '不合格宿舍数量',
+          nameTextStyle: {
+            color: '#333',
+          },
+          axisLine: {
+            lineStyle: {
+              color: '#333',
+            },
+          },
+          axisLabel: {
+            color: '#333',
+          },
+        },
+        series: [
+          {
+            name: '不合格宿舍数量',
+            type: 'line',
+            data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 10)), // 示例数据
+          },
+        ],
+      })
+    }
+    // 饼图
+    if (pieChart.current) {
+      let myChart = echarts.init(pieChart.current)
+      myChart.setOption({
+        title: [
+          {
+            text: '饼图',
+            left: 'center',
+            top: '5%',
+          },
+          {
+            subtext: '不合格原因占比',
+            left: '12.5%',
+            top: '75%',
+            textAlign: 'center',
+          },
+          {
+            subtext: '六个楼层宿舍卫生不合格占比',
+            left: '37.5%',
+            top: '75%',
+            textAlign: 'center',
+          },
+          {
+            subtext: '时间段卫生不合格占比',
+            left: '62.5%',
+            top: '75%',
+            textAlign: 'center',
+          },
+          {
+            subtext: '连续不合格宿舍占比',
+            left: '87.5%',
+            top: '75%',
+            textAlign: 'center',
+          },
+        ],
+        series: [
+          {
+            type: 'pie',
+            radius: '40%',
+            center: ['50%', '50%'],
+            data: data1,
+            label: {
+              position: 'outer',
+              alignTo: 'none',
+              bleedMargin: 5,
+            },
+            left: 0,
+            right: '75%',
+            top: 0,
+            bottom: 0,
+          },
+          {
+            type: 'pie',
+            radius: '40%',
+            center: ['50%', '50%'],
+            data: data2,
+            label: {
+              position: 'outer',
+              alignTo: 'labelLine',
+              bleedMargin: 5,
+            },
+            left: '25%',
+            right: '50%',
+            top: 0,
+            bottom: 0,
+          },
+          {
+            type: 'pie',
+            radius: '40%',
+            center: ['50%', '50%'],
+            data: data3,
+            label: {
+              position: 'outer',
+              alignTo: 'edge',
+              margin: 20,
+            },
+            left: '50%',
+            right: '25%',
+            top: 0,
+            bottom: 0,
+          },
+          {
+            type: 'pie',
+            radius: '40%',
+            center: ['50%', '50%'],
+            data: data4,
+            label: {
+              position: 'outer',
+              alignTo: 'edge',
+              margin: 20,
+            },
+            left: '75%',
+            right: 0,
+            top: 0,
+            bottom: 0,
+          },
+        ],
+      })
+    }
+  }, [])
 
   return (
-    <div>
-      <Title level={2}>值日统计</Title>
-      <Line {...lineConfig} />
-
-      <Row gutter={[16, 16]}>
-        <Col span={6}>
-          <Pie {...pieConfig} />
-          <Title level={5} style={{ textAlign: 'center', color: '#1890ff' }}>
-            原因导致卫生不合格
-          </Title>
-        </Col>
-        <Col span={6}>
-          <Pie {...pieConfig2} />
-          <Title level={5} style={{ textAlign: 'center', color: '#1890ff' }}>
-            楼层卫生不合格
-          </Title>
-        </Col>
-        <Col span={6}>
-          <Pie {...pieConfig3} />
-          <Title level={5} style={{ textAlign: 'center', color: '#1890ff' }}>
-            时间段卫生不合格
-          </Title>
-        </Col>
-        <Col span={6}>
-          <Pie {...pieConfig4} />
-          <Title level={5} style={{ textAlign: 'center', color: '#1890ff' }}>
-            连续几天卫生不合格
-          </Title>
-        </Col>
-      </Row>
-
-      <Title level={3} style={{ marginTop: '20px' }}>
-        任务清单
-      </Title>
-      <Row gutter={[16, 16]}>
-        <Col span={12}>
-          <Title level={4} style={{ textAlign: 'center' }}>
-            上午
-          </Title>
-          <List
-            itemLayout="horizontal"
-            dataSource={taskListAM}
-            renderItem={item => (
-              <List.Item actions={[<Link to={`/audit/${item.id}`}>审核</Link>]}>
-                <List.Item.Meta title={item.room} description={`状态: ${item.status}`} />
-              </List.Item>
-            )}
-          />
-          <DatePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            value={deadlineAM}
-            onChange={setDeadlineAM}
-            style={{ marginBottom: '20px' }}
-          />
-        </Col>
-        <Col span={12}>
-          <Title level={4} style={{ textAlign: 'center' }}>
-            下午
-          </Title>
-          <List
-            itemLayout="horizontal"
-            dataSource={taskListPM}
-            renderItem={item => (
-              <List.Item actions={[<Link to={`/audit/${item.id}`}>审核</Link>]}>
-                <List.Item.Meta title={item.room} description={`状态: ${item.status}`} />
-              </List.Item>
-            )}
-          />
-          <DatePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            value={deadlinePM}
-            onChange={setDeadlinePM}
-            style={{ marginBottom: '20px' }}
-          />
-        </Col>
-      </Row>
+    <div style={{ margin: 0, padding: 0, height: '100%' }}>
+      <div ref={lineChart} style={{ height: '50%', width: '100%' }}></div>
+      <div ref={pieChart} style={{ height: '50%', width: '100%' }}></div>
     </div>
   )
 }
