@@ -37,7 +37,7 @@ const items = [
         label: '查宿统计',
         children: [
           {
-            key: '231',
+            key: '/absence-registration',
             label: '缺勤登记',
           },
         ],
@@ -47,7 +47,7 @@ const items = [
         label: '违规违纪',
         children: [
           {
-            key: '241',
+            key: 'violation-handling',
             label: '违规记录',
           },
         ],

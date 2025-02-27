@@ -87,7 +87,7 @@ const Home = () => {
           </Link>
         </Col>
         <Col span={6}>
-          <Link to="/violation">
+          <Link to="/violation-handling">
             <Card title="待处理" extra={<Badge count={20} />} style={{ backgroundColor: '#ffe6e6' }}>
               <Tag color="red">违规违纪</Tag>
             </Card>

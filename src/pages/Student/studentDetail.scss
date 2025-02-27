@@ -1,0 +1,81 @@
+// src/pages/Student/studentDetail.scss
+
+.student-detail {
+  margin: 0 auto;
+  font-size: 40px;
+  padding: 0;
+  .back-btn {
+    margin-bottom: 10px;
+    color: #1677ff;
+    padding-left: 0;
+
+    &:hover {
+      color: #4096ff;
+    }
+  }
+
+  .ant-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .ant-card-head {
+      background: #f0f9ff;
+      border-bottom: 2px solid #1677ff;
+
+      .ant-card-head-title {
+        color: #1d39c4;
+        // font-size: 18px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .ant-descriptions {
+    .ant-descriptions-row {
+      > th,
+      > td {
+        padding: 16px;
+        font-size: 20px;
+      }
+
+      th {
+        background: #fafafa;
+        color: #334454;
+        font-weight: 500;
+        width: 200px;
+      }
+
+      td {
+        color: #595959;
+
+        .ant-tag {
+          margin: 4px;
+          border-radius: 4px;
+          &[color='blue'] {
+            background: #e6f7ff;
+            border-color: #91d5ff;
+          }
+          &[color='green'] {
+            background: #f6ffed;
+            border-color: #b7eb8f;
+          }
+        }
+      }
+    }
+
+    // 特殊信息样式
+    .contact-info {
+      color: #1677ff;
+      font-weight: 500;
+    }
+
+    .dorm-members {
+      .ant-tag {
+        font-size: large;
+        padding: 10px;
+        background: #f6f6f8;
+        border-color: #d9d9d9;
+      }
+    }
+  }
+}

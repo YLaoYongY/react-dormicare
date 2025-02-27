@@ -1,0 +1,12 @@
+.ant-form-item-label label {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.ant-select-selector {
+  transition: all 0.3s;
+}
+
+.ant-select-focused .ant-select-selector {
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
