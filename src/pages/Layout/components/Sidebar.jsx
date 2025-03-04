@@ -47,7 +47,7 @@ const items = [
         label: '违规违纪',
         children: [
           {
-            key: 'violation-handling',
+            key: '/violation-handling',
             label: '违规记录',
           },
         ],
