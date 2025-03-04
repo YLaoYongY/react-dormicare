@@ -7,6 +7,8 @@ import FloorDetails from '@/pages/Attendance/components/AbsenceRegistration/Floo
 import ViolationHandling from '@/pages/Attendance/components/ViolationHandling/ViolationHandling'
 
 import Dormitory from '@/pages/Dormitory'
+import RoomChange from '@/pages/Dormitory/components/RoomChange'
+
 import Notice from '@/pages/Notice'
 import ReportRepair from '@/pages/ReportRepair'
 import Setting from '@/pages/Setting'
@@ -33,6 +35,8 @@ const router = createBrowserRouter([
       { path: 'floor-details/:floor', element: <FloorDetails /> },
       { path: 'violation-handling', element: <ViolationHandling /> },
       { path: 'dormitory', element: <Dormitory /> },
+      { path: 'roomchange', element: <RoomChange /> },
+
       { path: 'notice', element: <Notice /> },
       { path: 'report-repair', element: <ReportRepair /> },
       { path: 'setting', element: <Setting /> },

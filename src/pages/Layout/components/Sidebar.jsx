@@ -95,7 +95,7 @@ const items = [
         label: '宿舍管理',
       },
       {
-        key: '54',
+        key: '/RoomChange',
         label: '调换申请',
       },
     ],

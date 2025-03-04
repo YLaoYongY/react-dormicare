@@ -37,7 +37,7 @@ const Layout = () => {
         <SideBar />
       </Sider>
       <AntdLayout>
-        <Header style={{ display: 'flex', padding: 0, background: '#1677FF', alignItems: 'center' }}>
+        <Header style={{ display: 'flex', padding: 0, background: '#006B6D', alignItems: 'center' }}>
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
