@@ -175,6 +175,7 @@ const ViolationHandling = () => {
 
     // 学号筛选
     const idCondition = searchId === '' || item.studentId.includes(searchId)
+    console.log(selectedTime)
 
     return timeCondition && typeCondition && floorCondition && idCondition
   })
@@ -189,7 +190,7 @@ const ViolationHandling = () => {
     <Card
       title={
         <Flex gap={16} wrap="wrap">
-          <RangePicker onChange={dates => setSelectedTime(dates)} />
+          <RangePicker onChange={dates => setSelectedTime(dates || [])} value={selectedTime} />
           <Select placeholder="违规类型" style={{ width: 150 }} onChange={value => setSelectedType(value)}>
             <Option value="all">全部类型</Option>
             <Option value="晚归">晚归</Option>
