@@ -24,7 +24,9 @@ const Dormitory = () => {
   const [editingBuilding, setEditingBuilding] = useState(null)
   const [editingLayer, setEditingLayer] = useState(null)
   const [editingLayerData, setEditingLayerData] = useState({})
-
+  const [newLayerVisible, setNewLayerVisible] = useState(false)
+  const [currentBuilding, setCurrentBuilding] = useState(null)
+  const [newLayerForm] = Form.useForm()
   // 楼栋列配置
   const columns = [
     {
@@ -71,12 +73,48 @@ const Dormitory = () => {
               删除
             </Button>
           </Popconfirm>
+          <Button
+            type="link"
+            icon={<PlusOutlined />}
+            onClick={() => handleAddLayer(record)}
+            style={{ marginBottom: 16 }}
+          >
+            新增层数
+          </Button>
         </div>
       ),
       width: 180,
     },
   ]
 
+  // 新增层数处理方法
+  const handleAddLayer = building => {
+    setCurrentBuilding(building)
+    setNewLayerVisible(true)
+  }
+
+  const handleNewLayerSubmit = values => {
+    setBuildings(prev =>
+      prev.map(building =>
+        building.id === currentBuilding.id
+          ? {
+              ...building,
+              layers: [
+                ...building.layers,
+                {
+                  id: `${building.id}-${Date.now()}`,
+                  order: values.order, // 使用表单输入的层级
+                  floor: values.floor, // 使用表单输入的序号
+                },
+              ],
+            }
+          : building
+      )
+    )
+    setNewLayerVisible(false)
+    message.success('新增层数成功')
+    newLayerForm.resetFields()
+  }
   // 层数列配置
 
   // 展开层数配置
@@ -365,6 +403,43 @@ const Dormitory = () => {
               确认
             </Button>
           )}
+        </Form>
+      </Modal>
+      <Modal title="新增层数" open={newLayerVisible} onCancel={() => setNewLayerVisible(false)} footer={null}>
+        <Form form={newLayerForm} onFinish={handleNewLayerSubmit}>
+          <Form.Item
+            label="层级"
+            name="order"
+            rules={[
+              {
+                required: true,
+                message: '请输入层级',
+                type: 'number',
+                transform: value => Number(value),
+              },
+            ]}
+          >
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item
+            label="序号"
+            name="floor"
+            rules={[
+              {
+                required: true,
+                message: '请输入序号',
+                type: 'number',
+                transform: value => Number(value),
+              },
+            ]}
+          >
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              确认
+            </Button>
+          </Form.Item>
         </Form>
       </Modal>
     </Card>
