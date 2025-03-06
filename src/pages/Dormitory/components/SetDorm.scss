@@ -1,0 +1,32 @@
+.set-dorm-page {
+}
+
+.building-buttons {
+  padding: 5px 30px;
+  margin-bottom: 16px;
+  margin-right: 20px;
+}
+
+.main-content {
+  display: flex;
+  border: 1px solid #e8e8e8;
+  // padding: 20px;
+}
+
+.floor-buttons {
+  width: 120px;
+  margin-right: 16px;
+  padding: 20px;
+  border-right: 1px solid #e8e8e8;
+  button {
+    margin-bottom: 8px;
+  }
+}
+
+.right-content {
+  flex: 1;
+  padding: 20px;
+  .action-buttons {
+    margin-bottom: 16px;
+  }
+}

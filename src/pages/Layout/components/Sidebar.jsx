@@ -84,8 +84,9 @@ const items = [
     children: [
       {
         key: '/dormitory',
-        label: '楼层管理',
+        label: '楼栋管理',
       },
+      { key: '/set-dorm', label: '设置宿舍' },
       {
         key: '52',
         label: '分配宿舍',
