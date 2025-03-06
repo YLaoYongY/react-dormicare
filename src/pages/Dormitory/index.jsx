@@ -4,6 +4,12 @@ import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, RedoOutline
 import './index.scss'
 
 const Dormitory = () => {
+  // 数字转中文函数
+  const numberToChinese = num => {
+    const chineseNumbers = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
+    return chineseNumbers[num - 1] || num
+  }
+
   const [form] = Form.useForm()
   const [buildings, setBuildings] = useState([
     {
@@ -103,8 +109,8 @@ const Dormitory = () => {
                 ...building.layers,
                 {
                   id: `${building.id}-${Date.now()}`,
-                  order: values.order, // 使用表单输入的层级
-                  floor: values.floor, // 使用表单输入的序号
+                  order: numberToChinese(building.layers.length + 1),
+                  floor: values.floor,
                 },
               ],
             }
@@ -256,7 +262,7 @@ const Dormitory = () => {
                 layers: Array.from({ length: values.floors }, (_, index) => ({
                   id: `${Date.now()}-${index + 1}`,
                   floor: values.order + (index + 1) + '00',
-                  order: index + 1,
+                  order: numberToChinese(index + 1),
                 })),
               }
             : building
@@ -275,7 +281,7 @@ const Dormitory = () => {
         layers: Array.from({ length: values.floors }, (_, index) => ({
           id: `${Date.now()}-${index + 1}`,
           floor: values.order + (index + 1) + '00',
-          order: index + 1,
+          order: numberToChinese(index + 1) + '层',
         })),
       }
       // console.log(values)

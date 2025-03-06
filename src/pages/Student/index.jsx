@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Form, Input, Select, Table, Modal, Tag } from 'antd'
+import { Button, Form, Input, Select, Table, Modal, Tag, Popconfirm, message } from 'antd'
 import './index.scss'
 
 const mockStudents = [
@@ -76,6 +76,25 @@ const Student = () => {
     },
     { title: '楼层', dataIndex: 'floor', key: 'floor' },
     { title: '层长', dataIndex: 'floorManager', key: 'floorManager' },
+    {
+      title: '操作',
+      key: 'action',
+      render: (_, record) => (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button type="link" onClick={() => handleEdit(record)}>
+            编辑
+          </Button>
+          <Button type="link" onClick={() => handleResetPwd(record)}>
+            重置密码
+          </Button>
+          <Popconfirm title="确认删除该学生？" onConfirm={() => handleDelete(record.id)}>
+            <Button type="link" danger>
+              删除
+            </Button>
+          </Popconfirm>
+        </div>
+      ),
+    },
   ]
 
   const handleSearch = values => {
@@ -94,12 +113,15 @@ const Student = () => {
   }
 
   const handleDoubleClick = e => {
-    const select = e.target.closest('.ant-select-selector')
-    if (select) {
-      const input = select.querySelector('input')
-      if (input) {
-        input.removeAttribute('readonly')
-        input.focus()
+    const selection = window.getSelection()
+    if (selection.rangeCount > 0) {
+      const select = e.target.closest('.ant-select-selector')
+      if (select) {
+        const input = select.querySelector('input')
+        if (input) {
+          input.removeAttribute('readonly')
+          input.focus()
+        }
       }
     }
   }
@@ -113,8 +135,53 @@ const Student = () => {
     form.setFieldsValue({ className: undefined })
   }, [form.getFieldValue('department')])
 
+  // 重置搜索框
+  const searchRest = () => {
+    form.resetFields()
+    setData(mockStudents)
+  }
+  // 添加处理逻辑
+  const [editModalVisible, setEditModalVisible] = useState(false)
+  const [selectedStudent, setSelectedStudent] = useState(null)
+
+  // 编辑处理
+  const [editForm] = Form.useForm()
+
+  // 修改handleEdit方法
+  const handleEdit = student => {
+    setSelectedStudent(student)
+    editForm.setFieldsValue({
+      name: student.name,
+      dorm: student.dorm,
+      department: student.department,
+      grade: student.grade,
+      className: student.className,
+      floor: student.floor,
+      // 其他需要编辑的字段...
+    })
+    setEditModalVisible(true)
+  }
+
+  // 添加表单提交处理
+  // 编辑表单提交处理
+  const handleEditSubmit = values => {
+    setData(prev => prev.map(item => (item.id === selectedStudent.id ? { ...item, ...values } : item)))
+    message.success('修改成功')
+    setEditModalVisible(false)
+  }
+  // 重置密码
+  const handleResetPwd = student => {
+    // 实际开发中应调用API
+    message.success(`已重置${student.name}的密码为默认密码`)
+  }
+
+  // 删除处理
+  const handleDelete = id => {
+    setData(prev => prev.filter(item => item.id !== id))
+    message.success('删除成功')
+  }
   return (
-    <div style={{ padding: 24 }}>
+    <div>
       <Form form={form} layout="inline" onFinish={handleSearch}>
         {/* 第一行筛选条件 */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
@@ -150,10 +217,6 @@ const Student = () => {
           <Form.Item label="层长" name="floorManager">
             <Input style={{ width: 120 }} />
           </Form.Item>
-        </div>
-
-        {/* 第二行筛选条件 */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
           <Form.Item label="院系" name="department">
             <Select
               style={{ width: 180 }}
@@ -163,7 +226,16 @@ const Student = () => {
               ]}
             />
           </Form.Item>
-
+          <Form.Item label="专业" name="major">
+            <Select
+              style={{ width: 120 }}
+              options={[
+                { label: '计算机', value: '计算机' },
+                { label: '物联网', value: '物联网' },
+                // 其他专业...
+              ]}
+            />
+          </Form.Item>
           <Form.Item label="年级" name="grade">
             <Select
               style={{ width: 120 }}
@@ -186,14 +258,13 @@ const Student = () => {
               }))}
             />
           </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" style={{ marginRight: 16 }}>
+              查询
+            </Button>
+            <Button onClick={() => searchRest()}>重置</Button>
+          </Form.Item>
         </div>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit" style={{ marginRight: 16 }}>
-            查询
-          </Button>
-          <Button onClick={() => form.resetFields()}>重置</Button>
-        </Form.Item>
       </Form>
 
       <Table
@@ -216,6 +287,64 @@ const Student = () => {
             <p>电话：{selectedStaff.phone}</p>
           </div>
         )}
+      </Modal>
+      <Modal
+        title="编辑学生信息"
+        visible={editModalVisible}
+        onCancel={() => setEditModalVisible(false)}
+        footer={[
+          <Button key="back" onClick={() => setEditModalVisible(false)}>
+            取消
+          </Button>,
+          <Button key="submit" type="primary" onClick={() => editForm.submit()}>
+            确认
+          </Button>,
+        ]}
+      >
+        <Form form={editForm} layout="vertical" onFinish={handleEditSubmit}>
+          <Form.Item label="姓名" name="name" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+
+          <Form.Item label="宿舍号" name="dorm" rules={[{ required: true }]}>
+            <Select
+              options={Object.values(dormData)
+                .flat()
+                .map(d => ({ label: d, value: d }))}
+            />
+          </Form.Item>
+
+          <Form.Item label="院系" name="department" rules={[{ required: true }]}>
+            <Select
+              options={[
+                { label: '信息技术分院', value: '信息技术分院' },
+                { label: '生物科技分院', value: '生物科技分院' },
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item label="年级" name="grade" rules={[{ required: true }]}>
+            <Select
+              options={Array.from({ length: 6 }, (_, i) => 2020 + i).map(year => ({
+                label: `${year}级`,
+                value: `${year}级`,
+              }))}
+            />
+          </Form.Item>
+
+          <Form.Item label="班级" name="className" rules={[{ required: true }]}>
+            <Select
+              options={departments[editForm.getFieldValue('department')]?.map(cls => ({
+                label: cls,
+                value: cls,
+              }))}
+            />
+          </Form.Item>
+
+          <Form.Item label="楼层" name="floor" rules={[{ required: true }]}>
+            <Select options={Object.keys(dormData).map(f => ({ label: f, value: f }))} />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   )
