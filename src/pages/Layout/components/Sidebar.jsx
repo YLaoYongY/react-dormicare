@@ -88,12 +88,8 @@ const items = [
       },
       { key: '/set-dorm', label: '设置宿舍' },
       {
-        key: '52',
+        key: '/roommate-assignment',
         label: '分配宿舍',
-      },
-      {
-        key: '55',
-        label: '宿舍管理',
       },
       {
         key: '/RoomChange',
@@ -112,7 +108,7 @@ const items = [
         label: '用户管理',
       },
       {
-        key: '62',
+        key: '/role-management',
         icon: <IdcardOutlined />,
         label: '角色管理',
       },
