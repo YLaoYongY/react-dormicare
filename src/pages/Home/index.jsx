@@ -80,7 +80,7 @@ const Home = () => {
           </Link>
         </Col>
         <Col span={6}>
-          <Link to="/maintenance">
+          <Link to="/report-repair">
             <Card title="待处理" extra={<Badge count={20} />} style={{ backgroundColor: '#fff6cc' }}>
               <Tag color="yellow">待维修数</Tag>
             </Card>
