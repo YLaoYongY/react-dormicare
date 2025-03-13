@@ -11,6 +11,8 @@ import {
   SolutionOutlined,
   UserOutlined,
   IdcardOutlined,
+  FolderOutlined,
+  FileOutlined,
 } from '@ant-design/icons'
 
 const RoleManagement = () => {
@@ -23,7 +25,9 @@ const RoleManagement = () => {
   const [editingId, setEditingId] = useState(null)
   const [selectedRole, setSelectedRole] = useState(null)
   const [checkedKeys, setCheckedKeys] = useState([])
-
+  // 新增状态控制查看权限弹窗
+  const [isViewPermissionModalVisible, setIsViewPermissionModalVisible] = useState(false)
+  const [viewingPermissions, setViewingPermissions] = useState([])
   // 模拟初始数据
   useEffect(() => {
     setData([
@@ -117,11 +121,6 @@ const RoleManagement = () => {
         ),
     },
     {
-      title: '角色权限',
-      dataIndex: 'permissions',
-      render: text => text.join(', '),
-    },
-    {
       title: '操作',
       render: (_, record) => (
         <>
@@ -140,6 +139,9 @@ const RoleManagement = () => {
           <Button type="link" onClick={() => handleAssignPermissions(record)}>
             分配权限
           </Button>
+          <Button type="link" onClick={() => handleViewPermissions(record)}>
+            查看权限
+          </Button>
           <Button type="link" danger onClick={() => handleDelete(record.id)}>
             删除
           </Button>
@@ -147,6 +149,71 @@ const RoleManagement = () => {
       ),
     },
   ]
+
+  // 在组件内添加以下方法
+  const generatePermissionTree = useCallback((permissions, allNodes) => {
+    const permissionSet = new Set(permissions)
+    const findParents = (nodes, targetKey, path = []) => {
+      for (const node of nodes) {
+        const newPath = [...path, node]
+        if (node.key === targetKey) return newPath
+        if (node.children) {
+          const found = findParents(node.children, targetKey, newPath)
+          if (found) return found
+        }
+      }
+      return null
+    }
+
+    const result = []
+    const addedKeys = new Set()
+
+    permissions.forEach(key => {
+      const path = findParents(allNodes, key)
+      if (path) {
+        path.forEach(node => {
+          if (!addedKeys.has(node.key)) {
+            const newNode = {
+              title: node.title,
+              key: node.key,
+              children: [],
+              disabled: true,
+            }
+
+            // 构建层级关系
+            let currentLevel = result
+            path.slice(0, path.indexOf(node)).forEach(parent => {
+              let exist = currentLevel.find(n => n.key === parent.key)
+              if (!exist) {
+                exist = {
+                  title: parent.title,
+                  key: parent.key,
+                  children: [],
+                  disabled: true,
+                }
+                currentLevel.push(exist)
+                addedKeys.add(parent.key)
+              }
+              currentLevel = exist.children
+            })
+
+            if (!currentLevel.some(n => n.key === node.key)) {
+              currentLevel.push(newNode)
+              addedKeys.add(node.key)
+            }
+          }
+        })
+      }
+    })
+
+    return result
+  }, [])
+
+  // 查看权限处理方法
+  const handleViewPermissions = role => {
+    setViewingPermissions(role.permissions)
+    setIsViewPermissionModalVisible(true)
+  }
 
   const handleSearch = values => {
     const filtered = data.filter(item => {
@@ -255,10 +322,8 @@ const RoleManagement = () => {
           </Button>
         </Form.Item>
       </Form>
-
       {/* 角色表格 */}
       <Table columns={columns} dataSource={filteredData} rowKey="id" bordered style={{ marginTop: 20 }} />
-
       {/* 新增角色模态框 */}
       <Modal title="新增角色" visible={isModalVisible} onCancel={() => setIsModalVisible(false)} footer={null}>
         <Form form={form} layout="vertical" onFinish={handleAddSubmit}>
@@ -275,7 +340,6 @@ const RoleManagement = () => {
           </Form.Item>
         </Form>
       </Modal>
-
       {/* 分配权限模态框 */}
       <Modal
         title={`为 ${selectedRole?.roleName} 分配权限`}
@@ -290,6 +354,19 @@ const RoleManagement = () => {
           treeData={treeData}
           defaultExpandAll
         />
+      </Modal>
+
+      <Modal
+        title="角色权限详情"
+        visible={isViewPermissionModalVisible}
+        onCancel={() => setIsViewPermissionModalVisible(false)}
+        footer={null}
+      >
+        <ul>
+          {viewingPermissions.map((permission, index) => (
+            <li key={index}>{permission}</li>
+          ))}
+        </ul>
       </Modal>
     </div>
   )
