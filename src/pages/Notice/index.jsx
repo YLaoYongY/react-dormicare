@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Form, Input, Table, Modal, DatePicker, message } from 'antd'
 import moment from 'moment'
+import { setNotice, addNotice } from '@/store/components/notice'
+import { useDispatch } from 'react-redux'
 
 const NoticeManagement = () => {
   const [form] = Form.useForm()
@@ -10,7 +12,7 @@ const NoticeManagement = () => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const { RangePicker } = DatePicker
-
+  const dispatch = useDispatch()
   // 模拟初始数据
   useEffect(() => {
     setData([
@@ -42,6 +44,25 @@ const NoticeManagement = () => {
       },
     ])
   }, [])
+  const handleSetNotice = data => {
+    dispatch(setNotice(data))
+    console.log('设置成功')
+  }
+
+  useEffect(() => {
+    const localNoticeData = localStorage.getItem('noticeData')
+    if (!localNoticeData) {
+      handleSetNotice(data)
+    } else {
+      console.log(...data, JSON.parse(localNoticeData))
+      setFilteredData(...data, JSON.parse(localNoticeData))
+    }
+  }, [])
+
+  // const [noticeData] = data
+  // console.log(data)
+  // console.log(noticeData)
+  // handleSetNotice(data)
 
   const columns = [
     {
@@ -120,6 +141,7 @@ const NoticeManagement = () => {
     message.success('修改保存成功')
   }
 
+  // 新增逻辑
   const handleAddSubmit = values => {
     const newNotice = {
       id: Date.now(),
@@ -130,6 +152,7 @@ const NoticeManagement = () => {
     setFilteredData([...data, newNotice])
     setIsModalVisible(false)
     form.resetFields()
+    dispatch(addNotice(newNotice))
     message.success('新增公告成功')
   }
 
