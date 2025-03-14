@@ -83,7 +83,7 @@ const Home = () => {
       {/* 上方栅格列表 */}
       <Row gutter={[16, 16]}>
         <Col span={6}>
-          <Link to="/pending">
+          <Link to="/duty-rectification">
             <Card title="待处理" extra={<Badge count={20} />} style={{ backgroundColor: '#e6f7ff' }}>
               <Tag color="blue">值日整改</Tag>
             </Card>
@@ -104,7 +104,7 @@ const Home = () => {
           </Link>
         </Col>
         <Col span={6}>
-          <Link to="/attendance">
+          <Link to="/absence-registration">
             <Card title="待处理" extra={<Badge count={20} />} style={{ backgroundColor: '#e6fff2' }}>
               <Tag color="green">考勤统计</Tag>
             </Card>
