@@ -66,8 +66,18 @@ const Home = () => {
       { id: 2, title: '公告标题 2', content: '公告内容 2' },
       { id: 3, title: '公告标题 3', content: '公告内容 3' },
     ]
-    setNotices(mockNotices)
+    const noticeData = JSON.parse(localStorage.getItem('noticeData'))
+    const length = noticeData.length - 1
+    console.log(length)
+
+    console.log([noticeData[length], noticeData[length - 1]])
+    if (noticeData && noticeData.length > 1) {
+      setNotices([noticeData[length], noticeData[length - 1]])
+    } else {
+      setNotices(mockNotices)
+    }
   }, [])
+
   return (
     <div>
       {/* 上方栅格列表 */}
@@ -118,7 +128,7 @@ const Home = () => {
         style={{ marginTop: '20px', fontSize: '14px' }} // 设置小一点的字号
         header={<div style={{ fontSize: '18px', fontWeight: 'bold' }}>公高</div>}
         bordered
-        dataSource={noticesData}
+        dataSource={notices}
         renderItem={item => (
           <List.Item
             actions={[
