@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Form, Input, Table, Modal, DatePicker, message } from 'antd'
 import moment from 'moment'
-import { setNotice, addNotice } from '@/store/components/notice'
+import { setNotice, addNotice, editNotice } from '@/store/components/notice'
 import { useDispatch } from 'react-redux'
 
 const NoticeManagement = () => {
@@ -51,10 +51,12 @@ const NoticeManagement = () => {
 
   useEffect(() => {
     const localNoticeData = localStorage.getItem('noticeData')
-    if (!localNoticeData) {
+    if (!localNoticeData || localNoticeData == []) {
       handleSetNotice(data)
     } else {
-      console.log(...data, JSON.parse(localNoticeData))
+      const parsedData = JSON.parse(localNoticeData)
+      // console.log(...data, JSON.parse(localNoticeData))
+      setData(parsedData)
       setFilteredData(...data, JSON.parse(localNoticeData))
     }
   }, [])
@@ -125,7 +127,14 @@ const NoticeManagement = () => {
     setIsModalVisible(true)
   }
 
+  // 编辑逻辑
+  // const handleEditNotice = data => {
+  //   dispatch(editNotice(data))
+  // }
   const handleEditChange = (value, id, field) => {
+    // console.log(value, id, field)
+
+    // handleEditNotice({})
     const newData = data.map(item => {
       if (item.id === id) {
         return { ...item, [field]: value }
@@ -137,7 +146,10 @@ const NoticeManagement = () => {
   }
 
   const handleSave = id => {
+    const localNoticeData = localStorage.getItem('noticeData')
     setEditingId(null)
+    setData(JSON.parse(localNoticeData))
+    setFilteredData([...data, JSON.parse(localNoticeData)])
     message.success('修改保存成功')
   }
 
