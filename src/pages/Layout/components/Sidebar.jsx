@@ -31,27 +31,29 @@ const items = [
         key: '/attendance',
         label: '值日统计',
       },
+      {
+        key: '/duty-rectification',
+        label: '值日整改',
+      },
+      {
+        key: '/absence-registration',
+        label: '缺勤登记',
+      },
+      {
+        key: '/violation-handling',
+        label: '违规记录',
+      },
 
-      {
-        key: '23',
-        label: '查宿统计',
-        children: [
-          {
-            key: '/absence-registration',
-            label: '缺勤登记',
-          },
-        ],
-      },
-      {
-        key: '24',
-        label: '违规违纪',
-        children: [
-          {
-            key: '/violation-handling',
-            label: '违规记录',
-          },
-        ],
-      },
+      // {
+      //   key: '23',
+      //   label: '查宿统计',
+      //   children: [],
+      // },
+      // {
+      //   key: '24',
+      //   label: '违规违纪',
+      //   children: [],
+      // },
     ],
   },
   {

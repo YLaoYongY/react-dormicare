@@ -5,7 +5,7 @@ import Attendance from '@/pages/Attendance'
 import AbsenceRegistration from '@/pages/Attendance/components/AbsenceRegistration/AbsenceRegistration'
 import FloorDetails from '@/pages/Attendance/components/AbsenceRegistration/FloorDetails'
 import ViolationHandling from '@/pages/Attendance/components/ViolationHandling/ViolationHandling'
-
+import DutyRectification from '@/pages/Attendance/components/DutyRectification/DutyRectification'
 import Dormitory from '@/pages/Dormitory'
 import RoomChange from '@/pages/Dormitory/components/RoomChange'
 import SetDorm from '@/pages/Dormitory/components/SetDorm'
@@ -38,6 +38,8 @@ const router = createBrowserRouter([
       { path: 'absence-registration', element: <AbsenceRegistration /> },
       { path: 'floor-details/:floor', element: <FloorDetails /> },
       { path: 'violation-handling', element: <ViolationHandling /> },
+      { path: 'duty-rectification', element: <DutyRectification /> },
+
       { path: 'dormitory', element: <Dormitory /> },
       { path: 'set-dorm', element: <SetDorm /> },
       { path: 'role-management', element: <RoleManagement /> },
