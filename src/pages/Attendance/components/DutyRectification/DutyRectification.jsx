@@ -25,7 +25,7 @@ const DutyRectification = () => {
       rectificationType: '卫生整改',
       images: [a],
       submitter: '王老师',
-      submitTime: '2024-03-10 14:30',
+      submitTime: '2024-03-10T14:30:00',
       status: '待处理',
     },
     {
@@ -35,7 +35,7 @@ const DutyRectification = () => {
       rectificationType: '设施整改',
       images: [b],
       submitter: '李同学',
-      submitTime: '2024-03-11 09:15',
+      submitTime: '2024-03-16T14:30:00',
       status: '整改合格',
     },
   ])
@@ -129,16 +129,28 @@ const DutyRectification = () => {
     setRejectReason('')
   }
 
-  // 修改后的筛选逻辑
   const filteredData = requestData.filter(item => {
+    // 转换提交时间为moment对象
+    const submitMoment = moment(item.submitTime)
     const timeCondition =
-      selectedTime.length === 0 ||
-      (moment(item.submitTime).isAfter(selectedTime[0]) && moment(item.submitTime).isBefore(selectedTime[1]))
+      selectedTime.length === 0
+        ? true
+        : new Date(item.submitTime) >= selectedTime[0].startOf('day') &&
+          new Date(item.submitTime) <= selectedTime[1].endOf('day')
+    // // 时间筛选逻辑
+    // const timeCondition =
+    //   selectedTime.length === 0
+    //     ? true
+    //     : submitMoment.isBetween(
+    //         selectedTime[0].startOf('day'),
+    //         selectedTime[1].endOf('day'),
+    //         null,
+    //         '[]' // 包含边界
+    //       )
 
+    // 其他筛选条件
     const typeCondition = selectedType === 'all' || item.rectificationType === selectedType
-
     const dormCondition = searchDormNumber === '' || item.dormNumber.includes(searchDormNumber.toUpperCase())
-
     const statusCondition = selectedStatus === 'all' || item.status === selectedStatus
 
     return timeCondition && typeCondition && dormCondition && statusCondition
@@ -148,7 +160,10 @@ const DutyRectification = () => {
     <Card
       title={
         <Flex gap={16} wrap="wrap">
-          <RangePicker onChange={dates => setSelectedTime(dates)} value={selectedTime} />
+          <RangePicker
+            onChange={dates => setSelectedTime(dates || [])} // 确保始终为数组
+            value={selectedTime}
+          />
           <Input
             placeholder="宿舍号"
             allowClear
@@ -161,7 +176,12 @@ const DutyRectification = () => {
             <Option value="设施整改">设施整改</Option>
             <Option value="纪律整改">纪律整改</Option>
           </Select>
-          <Select placeholder="处理状态" style={{ width: 120 }} value={selectedStatus} onChange={setSelectedStatus}>
+          <Select
+            placeholder="处理状态"
+            style={{ width: 120 }}
+            value={selectedStatus ? selectedStatus : []}
+            onChange={setSelectedStatus}
+          >
             <Option value="all">全部状态</Option>
             <Option value="待处理">待处理</Option>
             <Option value="整改合格">整改合格</Option>
