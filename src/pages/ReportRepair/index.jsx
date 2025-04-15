@@ -6,7 +6,8 @@ const { RangePicker } = DatePicker
 import a from '@/assets/1.png'
 import b from '@/assets/2.png'
 import c from '@/assets/3.jpg'
-
+import { useDispatch } from 'react-redux'
+import { setReport_repair } from '@/store/components/message'
 const MaintenanceRequest = () => {
   const [selectedTime, setSelectedTime] = useState([])
   const [selectedFacility, setSelectedFacility] = useState('all')
@@ -14,7 +15,7 @@ const MaintenanceRequest = () => {
   const [searchSubmitter, setSearchSubmitter] = useState('')
   const [currentRecord, setCurrentRecord] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
-
+  const dispatch = useDispatch()
   // 模拟假数据
   const [requestData, setRequestData] = useState([
     {
@@ -38,6 +39,17 @@ const MaintenanceRequest = () => {
     // 更多数据...
   ])
 
+  // 带批阅筛选
+  const messageFilterData = () => {
+    const dispatch = useDispatch()
+    const filterData = requestData.filter(item => {
+      return item.status === '待批阅'
+    })
+    console.log(filterData)
+
+    dispatch(setReport_repair(filterData.length))
+  }
+  messageFilterData()
   // 表格列配置
   const columns = [
     {
@@ -123,6 +135,7 @@ const MaintenanceRequest = () => {
   const handleStatusChange = newStatus => {
     setRequestData(prev => prev.map(item => (item.key === currentRecord.key ? { ...item, status: newStatus } : item)))
     setModalVisible(false)
+    messageFilterData()
   }
   // 在状态管理部分添加重置方法
   const handleResetFilters = () => {
@@ -130,6 +143,7 @@ const MaintenanceRequest = () => {
     setSelectedFacility('all')
     setSelectedStatus('all')
     setSearchSubmitter('')
+    messageFilterData()
     // console.log(selectedFacility, selectedStatus)
   }
   return (

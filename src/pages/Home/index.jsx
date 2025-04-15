@@ -12,8 +12,18 @@ const Home = () => {
   const [wordData, setWordData] = useState([])
   const [notices, setNotices] = useState([])
   const [dutyCount, setDutyCount] = useState(useSelector(state => state.message.duty_rectification))
+  const [report_repair, setReport_repair] = useState(useSelector(state => state.message.report_repair))
+  const [violation_handling, setViolation_handling] = useState(useSelector(state => state.message.violation_handling))
+  const [absence_registration, setAbsence_registration] = useState(
+    useSelector(state => state.message.absence_registration)
+  )
   const location = useLocation()
-
+  useEffect(() => {
+    setDutyCount(localStorage.getItem('duty_rectification'))
+    setReport_repair(localStorage.getItem('report_repair'))
+    setViolation_handling(localStorage.getItem('violation_handling'))
+    setAbsence_registration(localStorage.getItem('absence_registration'))
+  }, [])
   // 模拟后端获取消息云图数据
   useEffect(() => {
     // 这里可以替换为实际的 API 请求
@@ -83,7 +93,7 @@ const Home = () => {
     const noticeData = JSON.parse(localStorage.getItem('noticeData'))
     const length = noticeData.length - 1
     // console.log(length)
-    setDutyCount(localStorage.getItem('duty_rectification'))
+
     // console.log([noticeData[length], noticeData[length - 1]])
     if (noticeData && noticeData.length > 1) {
       setNotices([noticeData[length], noticeData[length - 1]])
@@ -109,21 +119,33 @@ const Home = () => {
         </Col>
         <Col span={6}>
           <Link to="/report-repair">
-            <Card title="待处理" extra={<Badge count={20} />} style={{ backgroundColor: '#fff6cc' }}>
+            <Card
+              title="待处理"
+              extra={report_repair ? <Badge count={report_repair} /> : ''}
+              style={{ backgroundColor: '#fff6cc' }}
+            >
               <Tag color="yellow">待维修数</Tag>
             </Card>
           </Link>
         </Col>
         <Col span={6}>
           <Link to="/violation-handling">
-            <Card title="待处理" extra={<Badge count={20} />} style={{ backgroundColor: '#ffe6e6' }}>
+            <Card
+              title="待处理"
+              extra={violation_handling ? <Badge count={violation_handling} /> : ''}
+              style={{ backgroundColor: '#ffe6e6' }}
+            >
               <Tag color="red">违规违纪</Tag>
             </Card>
           </Link>
         </Col>
         <Col span={6}>
           <Link to="/absence-registration">
-            <Card title="待处理" extra={<Badge count={20} />} style={{ backgroundColor: '#e6fff2' }}>
+            <Card
+              title="待处理"
+              extra={absence_registration ? <Badge count={absence_registration} /> : ''}
+              style={{ backgroundColor: '#e6fff2' }}
+            >
               <Tag color="green">考勤统计</Tag>
             </Card>
           </Link>

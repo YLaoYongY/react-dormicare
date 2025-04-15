@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Card, Table, Tag, Input, Select, DatePicker, Button, Modal, Flex } from 'antd'
+import { setViolation_handling } from '@/store/components/message'
+import { useDispatch } from 'react-redux'
 const { Option } = Select
 const { RangePicker } = DatePicker
 
@@ -10,7 +12,7 @@ const ViolationHandling = () => {
   const [searchId, setSearchId] = useState('')
   const [currentRecord, setCurrentRecord] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
-
+  const dispatch = useDispatch()
   // 模拟假数据
   const [violationData, setViolationData] = useState([
     {
@@ -104,7 +106,14 @@ const ViolationHandling = () => {
       status: '已消除',
     },
   ])
-
+  // 筛选未处理数据
+  const messageFilterData = () => {
+    const filterData = violationData.filter(item => {
+      return item.status === '未处理'
+    })
+    dispatch(setViolation_handling(filterData.length))
+  }
+  messageFilterData()
   // 表格列配置
   const columns = [
     {
@@ -184,6 +193,7 @@ const ViolationHandling = () => {
   const handleStatusChange = newStatus => {
     setViolationData(prev => prev.map(item => (item.key === currentRecord.key ? { ...item, status: newStatus } : item)))
     setModalVisible(false)
+    messageFilterData()
   }
 
   return (
