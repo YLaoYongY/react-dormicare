@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, Table, Tag, Input, Select, DatePicker, Button, Modal, Flex, Image, Form } from 'antd'
 import moment from 'moment'
 const { Option } = Select
@@ -6,6 +6,8 @@ const { RangePicker } = DatePicker
 import a from '@/assets/1.png'
 import b from '@/assets/2.png'
 import c from '@/assets/3.jpg'
+import { useDispatch } from 'react-redux'
+import { setDuty_rectification } from '@/store/components/message'
 const DutyRectification = () => {
   const [selectedTime, setSelectedTime] = useState([])
   const [selectedType, setSelectedType] = useState('all') // 改为整改类型
@@ -39,6 +41,28 @@ const DutyRectification = () => {
       status: '整改合格',
     },
   ])
+  // 筛选待处理逻辑
+  const filterMessageData = () => {
+    const dispatch = useDispatch()
+
+    // 状态同步逻辑
+    useEffect(() => {
+      const validData = requestData.filter(item => moment(item.submitTime).isValid())
+
+      // 同步待处理数量
+      const pendingCount = validData.filter(item => item.status === '待处理').length
+      dispatch(setDuty_rectification(pendingCount))
+
+      // 同步其他数据（示例）
+      // dispatch(updateAllData(validData))
+    }, [requestData, dispatch])
+    const filterdata = requestData.filter(item => {
+      return item.status === '待处理'
+    })
+    console.log(filterdata.length)
+    dispatch(setDuty_rectification(filterdata.length))
+  }
+  filterMessageData()
 
   // 修改后的表格列配置
   const columns = [
@@ -109,7 +133,9 @@ const DutyRectification = () => {
 
   // 处理通过
   const handleApprove = record => {
+    console.log(record)
     setRequestData(prev => prev.map(item => (item.key === record.key ? { ...item, status: '整改合格' } : item)))
+    filterMessageData()
   }
 
   // 处理打回
@@ -127,6 +153,7 @@ const DutyRectification = () => {
     )
     setIsRejectModalVisible(false)
     setRejectReason('')
+    filterMessageData()
   }
 
   const filteredData = requestData.filter(item => {
@@ -137,22 +164,11 @@ const DutyRectification = () => {
         ? true
         : new Date(item.submitTime) >= selectedTime[0].startOf('day') &&
           new Date(item.submitTime) <= selectedTime[1].endOf('day')
-    // // 时间筛选逻辑
-    // const timeCondition =
-    //   selectedTime.length === 0
-    //     ? true
-    //     : submitMoment.isBetween(
-    //         selectedTime[0].startOf('day'),
-    //         selectedTime[1].endOf('day'),
-    //         null,
-    //         '[]' // 包含边界
-    //       )
 
-    // 其他筛选条件
     const typeCondition = selectedType === 'all' || item.rectificationType === selectedType
     const dormCondition = searchDormNumber === '' || item.dormNumber.includes(searchDormNumber.toUpperCase())
     const statusCondition = selectedStatus === 'all' || item.status === selectedStatus
-
+    filterMessageData()
     return timeCondition && typeCondition && dormCondition && statusCondition
   })
 

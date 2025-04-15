@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Row, Col, Card, Divider, List, Button, Modal, Tag, Typography, Badge } from 'antd'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import WordCloud from 'react-d3-cloud'
+import { useSelector } from 'react-redux'
 
 const { Title, Text } = Typography
 
@@ -10,6 +11,8 @@ const Home = () => {
   const [selectedNotice, setSelectedNotice] = useState(null)
   const [wordData, setWordData] = useState([])
   const [notices, setNotices] = useState([])
+  const [dutyCount, setDutyCount] = useState(useSelector(state => state.message.duty_rectification))
+  const location = useLocation()
 
   // 模拟后端获取消息云图数据
   useEffect(() => {
@@ -37,6 +40,8 @@ const Home = () => {
       { text: '紧急公告', value: 20 },
     ]
     setWordData(mockWordData)
+    // dutyCount = useSelector(state => state.message.duty_rectification || 0)
+    console.log(dutyCount)
   }, [])
 
   const showModal = notice => {
@@ -58,6 +63,15 @@ const Home = () => {
     { id: 2, title: '公告二', content: '这是公告二的内容' },
     // 更多公告...
   ]
+  // 消息红点数据
+  // const messageState = useSelector(state => state.message)
+  // console.log(messageState)
+
+  // 获取特定字段
+  // const getMessageState = () => {
+  //   dutyCount = useSelector(state => state.message.duty_rectification)
+  //   console.log(dutyCount)
+  // }
   // 模拟后端获取公告列表数据
   useEffect(() => {
     // 这里可以替换为实际的 API 请求
@@ -68,9 +82,9 @@ const Home = () => {
     ]
     const noticeData = JSON.parse(localStorage.getItem('noticeData'))
     const length = noticeData.length - 1
-    console.log(length)
-
-    console.log([noticeData[length], noticeData[length - 1]])
+    // console.log(length)
+    setDutyCount(localStorage.getItem('duty_rectification'))
+    // console.log([noticeData[length], noticeData[length - 1]])
     if (noticeData && noticeData.length > 1) {
       setNotices([noticeData[length], noticeData[length - 1]])
     } else {
@@ -84,7 +98,11 @@ const Home = () => {
       <Row gutter={[16, 16]}>
         <Col span={6}>
           <Link to="/duty-rectification">
-            <Card title="待处理" extra={<Badge count={20} />} style={{ backgroundColor: '#e6f7ff' }}>
+            <Card
+              title="待处理"
+              extra={dutyCount ? <Badge count={dutyCount} /> : ''}
+              style={{ backgroundColor: '#e6f7ff' }}
+            >
               <Tag color="blue">值日整改</Tag>
             </Card>
           </Link>
