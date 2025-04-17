@@ -1,89 +1,95 @@
-import React from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { Card, Row, Col, List, Tag, Statistic } from 'antd'
-import { TeamOutlined, UserOutlined, WarningOutlined } from '@ant-design/icons'
-
-// 模拟数据（实际使用时需要替换为API获取的数据）
-const mockData = {
-  3: [
-    {
-      room: '301',
-      absentees: 2,
-      students: [
-        { name: '张三', reason: '病假', status: 'confirmed' },
-        { name: '李四', reason: '无故缺勤', status: 'unconfirmed' },
-      ],
-    },
-    { room: '305', absentees: 1, students: [{ name: '王五', reason: '事假', status: 'confirmed' }] },
-  ],
-}
+// FloorDetails.jsx
+import React, { useState } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
+import { Table, Tag, Card, Modal, Button } from 'antd'
 
 const FloorDetails = () => {
+  const location = useLocation()
   const { floor } = useParams()
-  const data = mockData[floor] || []
 
-  // 统计信息
-  const totalAbsent = data.reduce((sum, room) => sum + room.absentees, 0)
-  const mostAbsentRoom = data.sort((a, b) => b.absentees - a.absentees)[0]?.room || '无'
+  // 从路由state获取数据
+  const { data } = location.state || {}
+  const [editingRoom, setEditingRoom] = useState(null)
+  // 列配置
+  const columns = [
+    {
+      title: '房间号',
+      dataIndex: 'room',
+      key: 'room',
+      width: 120,
+    },
+    {
+      title: '缺勤人数',
+      dataIndex: 'absentees',
+      key: 'absentees',
+      width: 100,
+    },
+    {
+      title: '缺勤详情',
+      dataIndex: 'students',
+      key: 'students',
+      render: students => (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {students.map((student, index) => (
+            <Tag key={index} color={student.status === 'confirmed' ? 'green' : 'volcano'}>
+              {student.name}（{student.reason}）
+            </Tag>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: '操作',
+      key: 'action',
+      render: (_, record) => (
+        <Button size="small" onClick={() => setEditingRoom(record)}>
+          编辑
+        </Button>
+      ),
+    },
+  ]
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ textAlign: 'center', marginBottom: 32 }}>
-        <h1 style={{ fontSize: '24px', color: '#1a3353' }}>
-          <WarningOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
-          {floor}楼缺勤详情
-        </h1>
-
-        <Row gutter={16} style={{ marginTop: 20 }}>
-          <Col span={8}>
-            <Statistic
-              title="总缺勤人数"
-              value={totalAbsent}
-              prefix={<TeamOutlined />}
-              valueStyle={{ color: '#ff4d4f' }}
-            />
-          </Col>
-          <Col span={8}>
-            <Statistic title="最多缺勤宿舍" value={mostAbsentRoom} prefix={<UserOutlined />} />
-          </Col>
-        </Row>
-      </div>
-
-      <Row gutter={[16, 16]}>
-        {data.map((room, index) => (
-          <Col key={index} xs={24} sm={12} lg={8}>
-            <Card
-              title={`${room.room} 宿舍`}
-              bordered={false}
-              headStyle={{ backgroundColor: '#f0f5ff', border: 'none' }}
+    <div style={{ padding: 20 }}>
+      <Card title={`${floor}楼考勤总览`} style={{ marginBottom: 20 }}>
+        <div style={{ display: 'flex', gap: 40 }}>
+          <div>
+            <p style={{ margin: 0 }}>总人数: {data?.total || 0}</p>
+            <p style={{ margin: 0 }}>缺勤人数: {data?.absent || 0}</p>
+          </div>
+          <div>
+            <p
+              style={{
+                margin: 0,
+                color: data && ((data.total - data.absent) / data.total) * 100 >= 90 ? 'green' : 'red',
+                fontWeight: 'bold',
+              }}
             >
-              <List
-                header={<div>缺勤人员 ({room.absentees}人)</div>}
-                dataSource={room.students}
-                renderItem={item => (
-                  <List.Item>
-                    <List.Item.Meta
-                      style={{ cursor: 'pointer', padding: '12px' }}
-                      onClick={() => navigate(`/profile/${encodeURIComponent(item.name)}`)}
-                      title={item.name}
-                      description={
-                        <Tag color={item.status === 'confirmed' ? '#f50' : '#ff4d4f'} style={{ marginTop: 8 }}>
-                          {item.reason}
-                        </Tag>
-                      }
-                    />
-                    <span>{item.status === 'confirmed' ? '已确认' : '待确认'}</span>
-                  </List.Item>
-                )}
-              />
-            </Card>
-          </Col>
-        ))}
-      </Row>
+              出勤率: {data ? (((data.total - data.absent) / data.total) * 100).toFixed(1) : 0}%
+            </p>
+          </div>
+        </div>
+      </Card>
 
-      {data.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>当前楼层暂无缺勤记录</div>
-      )}
+      <Table
+        columns={columns}
+        dataSource={data?.rooms || []}
+        rowKey="room"
+        pagination={false}
+        bordered
+        scroll={{ x: 800 }}
+      />
+      <Modal
+        visible={!!editingRoom}
+        onCancel={() => setEditingRoom(null)}
+        onOk={() => {
+          // 调用父组件更新方法
+          updateAttendance(floor, editingRoom.room, newData)
+          setEditingRoom(null)
+        }}
+      >
+        {/* 编辑表单 */}
+      </Modal>
     </div>
   )
 }
