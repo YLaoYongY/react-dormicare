@@ -21,14 +21,11 @@
 - Node.js 16+
 - npm 9+
 
-### 安装运行
-```bash
-# 克隆项目
-git clone [项目仓库地址]
-cd reaact-dormicare
-
 # 安装依赖
 npm install
 
-# 启动开发服务器
-npm start
+# 启动项目
+vite
+npm run dev
+yarn dev
+pnpm dev
